@@ -24,10 +24,10 @@ For create a `Listener` simple implement `Listener` interface:
 func ListenerExample(*evli.Source){}
 ```
 
-Declare it using `Register` to bind multiple `Listener` to a single `Event`:
+Declare it using `Listen` to bind multiple `Listener` to a single `Event`:
 
 ```go
-_ = evli.Register(RandomeEvent{},ListenerExample, SeconListenerExemple)
+_ = evli.Listen(RandomeEvent{},ListenerExample, SeconListenerExemple)
 ```
 
 ### Source
@@ -48,6 +48,6 @@ For retrieving data, use a pointer structure to rehydrate from the `Event` paylo
 ```go
 func ListenerExample(s *evli.Source){
     data := &RandomData{}
-    _ = s.Listen(data)
+    _ = s.Payload(data)
 }
 ```
