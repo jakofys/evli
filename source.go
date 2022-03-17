@@ -41,7 +41,7 @@ func (s *Source) Payload(e interface{}) error {
 	s.mu.Lock()
 	for i := 0; i < vl.NumField(); i++ {
 		name := vl.Type().Field(i).Name
-		if tag, ok := vl.Type().Field(i).Tag.Lookup("bind"); ok {
+		if tag, ok := vl.Type().Field(i).Tag.Lookup("field"); ok {
 			name = tag
 		}
 

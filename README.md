@@ -34,11 +34,11 @@ _ = evli.Register(RandomeEvent{},ListenerExample, SeconListenerExemple)
 
 
 Make sure field data as same name as event payload field.
-You can also use tag `bind` to bind field data structure to event payload field:
+You can also use tag `field` to bind field data structure to event payload field:
 
 ```go
 type RandomData struct {
-    UserName string `bind:"Name"`
+    UserName string `field:"Name"`
     Age int
 }
 ```

@@ -26,7 +26,7 @@ type UnknownEvent struct {
 }
 
 type RandomTaggedData struct {
-	UserName string `bind:"Name"`
+	UserName string `field:"Name"`
 	Age      int
 }
 
