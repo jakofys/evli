@@ -27,13 +27,13 @@ func SubscriberExample(*evli.Source){}
 Declare it using `Subscribe` to bind multiple `Subscriber` to a single `Event`:
 
 ```go
-_ = evli.Subscribe(RandomeEvent{},SubscriberExample, SeconSubscriberExemple)
+_ = evli.Subscribe(RandomEvent{},SubscriberExample, SecondSubscriberExemple)
 ```
 
 ### Source
 
 
-Make sure field data as same name as event payload field.
+Make sure field data have same name as event payload field.
 You can also use tag `field` to bind field data structure to event payload field:
 
 ```go
