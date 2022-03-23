@@ -7,51 +7,51 @@ import (
 	"time"
 )
 
-// Bus is pool that bindinb event to his listeners
+// Bus is pool that bindinb event to his Subscribers
 type Bus struct {
-	routing map[string][]listenerDesc
+	routing map[string][]subscriberDesc
 }
 
-// broadcaster is binding between event and multiple listener to this event
+// broadcaster is binding between event and multiple Subscriber to this event
 var broadcaster = NewBus()
 
 // NewBus
 func NewBus() *Bus {
-	return &Bus{routing: make(map[string][]listenerDesc)}
+	return &Bus{routing: make(map[string][]subscriberDesc)}
 }
 
-// Register a listener and binding it to a specific event
-func (b *Bus) Listen(e Event, listeners ...Listener) error {
+// Register a Subscriber and binding it to a specific event
+func (b *Bus) Subscribe(e Event, Subscribers ...Subscriber) error {
 	name := reflect.TypeOf(e).Name()
 	if _, ok := b.routing[name]; !ok {
-		b.routing[name] = []listenerDesc{}
+		b.routing[name] = []subscriberDesc{}
 	}
-	for _, listener := range listeners {
-		ln := runtime.FuncForPC(reflect.ValueOf(listener).Pointer()).Name()
-		if listener == nil {
-			return ErrInvalidListener
+	for _, Subscriber := range Subscribers {
+		ln := runtime.FuncForPC(reflect.ValueOf(Subscriber).Pointer()).Name()
+		if Subscriber == nil {
+			return ErrInvalidSubscriber
 		}
 		for _, l := range b.routing[name] {
 			if ln == l.name {
-				return ErrDuplicatedListener
+				return ErrDuplicatedSubscriber
 			}
 		}
-		b.routing[name] = append(b.routing[name], listenerDesc{name: ln, l: listener})
+		b.routing[name] = append(b.routing[name], subscriberDesc{name: ln, l: Subscriber})
 	}
 	return nil
 }
 
-// Emit an event through the all listeners
-// return ErrNoListenerFound if no listener register to this event
+// Emit an event through the all Subscribers
+// return ErrNoSubscriberFound if no Subscriber register to this event
 func (b *Bus) Emit(e Event, m Meta) error {
 	name := reflect.TypeOf(e).Name()
 	k := reflect.ValueOf(e).Kind()
 	if k == reflect.Ptr {
 		return ErrNotPointerEvent
 	}
-	if listeners, ok := b.routing[name]; ok {
-		if len(listeners) == 0 {
-			return ErrNoListenerFound
+	if Subscribers, ok := b.routing[name]; ok {
+		if len(Subscribers) == 0 {
+			return ErrNoSubscriberFound
 		}
 		s := &Source{
 			payload:   e,
@@ -61,8 +61,8 @@ func (b *Bus) Emit(e Event, m Meta) error {
 			mu:        sync.Mutex{},
 		}
 
-		for _, listener := range listeners {
-			go listener.l(s)
+		for _, Subscriber := range Subscribers {
+			go Subscriber.l(s)
 		}
 	} else {
 		return ErrUnknownEvent
@@ -70,13 +70,13 @@ func (b *Bus) Emit(e Event, m Meta) error {
 	return nil
 }
 
-// Listen a listener and binding it to a specific event
-func Listen(e Event, listeners ...Listener) error {
-	return broadcaster.Listen(e, listeners...)
+// Subscribe a Subscriber and binding it to a specific event
+func Subscribe(e Event, Subscribers ...Subscriber) error {
+	return broadcaster.Subscribe(e, Subscribers...)
 }
 
-// Emit an event through the all listeners
-// return ErrNoListenerFound if no listener register to this event
+// Emit an event through the all Subscribers
+// return ErrNoSubscriberFound if no Subscriber register to this event
 func Emit(e Event, m Meta) error {
 	return broadcaster.Emit(e, m)
 }

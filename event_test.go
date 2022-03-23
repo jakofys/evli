@@ -18,7 +18,7 @@ type EventRandom struct {
 	Number int
 }
 
-type EventNoListener struct {
+type EventNoSubscriber struct {
 	Name string
 }
 type UnknownEvent struct {
@@ -30,7 +30,7 @@ type RandomTaggedData struct {
 	Age      int
 }
 
-func EventRandomListener(s *evli.Source) {
+func EventRandomSubscriber(s *evli.Source) {
 	m := s.Meta()
 	t := m["testing"].(*testing.T)
 	e := EventRandom{}
@@ -48,14 +48,14 @@ func EventRandomListener(s *evli.Source) {
 	}
 
 	if err := s.Payload(&e); err != nil {
-		t.Errorf("expected Listen to be operationnal: %s", err)
+		t.Errorf("expected Subscribe to be operationnal: %s", err)
 	}
 	if e.Name != "My name" && e.Number != 0 {
 		t.Errorf("expected not listening public data correctly")
 	}
 }
 
-func EventStdListener(s *evli.Source) {
+func EventStdSubscriber(s *evli.Source) {
 	m := s.Meta()
 	t := m["testing"].(*testing.T)
 	e := EventStd{}
@@ -81,10 +81,10 @@ func EventStdListener(s *evli.Source) {
 	}
 }
 
-func TestRegisterListeners(t *testing.T) {
+func TestRegisterSubscribers(t *testing.T) {
 	type Give struct {
-		listener []evli.Listener
-		event    evli.Event
+		Subscriber []evli.Subscriber
+		event      evli.Event
 	}
 	table := []struct {
 		give    Give
@@ -93,39 +93,39 @@ func TestRegisterListeners(t *testing.T) {
 	}{
 		{
 			give: Give{
-				listener: []evli.Listener{EventStdListener, EventRandomListener},
-				event:    EventStd{},
+				Subscriber: []evli.Subscriber{EventStdSubscriber, EventRandomSubscriber},
+				event:      EventStd{},
 			},
 			expect:  nil,
-			message: "don't register basic listener",
+			message: "don't register basic Subscriber",
 		},
 		{
 			give: Give{
-				listener: []evli.Listener{EventStdListener, EventStdListener},
-				event:    EventStd{},
+				Subscriber: []evli.Subscriber{EventStdSubscriber, EventStdSubscriber},
+				event:      EventStd{},
 			},
-			expect:  evli.ErrDuplicatedListener,
-			message: "don't detect duplicated listener",
+			expect:  evli.ErrDuplicatedSubscriber,
+			message: "don't detect duplicated Subscriber",
 		},
 		{
 			give: Give{
-				listener: []evli.Listener{nil},
-				event:    EventStd{},
+				Subscriber: []evli.Subscriber{nil},
+				event:      EventStd{},
 			},
-			expect:  evli.ErrInvalidListener,
-			message: "don't detect invalid listener as nil",
+			expect:  evli.ErrInvalidSubscriber,
+			message: "don't detect invalid Subscriber as nil",
 		},
 		{
 			give: Give{
-				listener: []evli.Listener{},
-				event:    EventNoListener{},
+				Subscriber: []evli.Subscriber{},
+				event:      EventNoSubscriber{},
 			},
 			expect:  nil,
 			message: "must save event name",
 		},
 	}
 	for _, test := range table {
-		if err := evli.Listen(test.give.event, test.give.listener...); err != test.expect {
+		if err := evli.Subscribe(test.give.event, test.give.Subscriber...); err != test.expect {
 			t.Errorf(test.message, err)
 		}
 	}
@@ -140,7 +140,7 @@ func TestEmittingEvent(t *testing.T) {
 		{
 			give:    EventStd{Name: "My name", Age: 1, hidden: "hi hi hi"},
 			expect:  nil,
-			message: "don't emit basic listener event",
+			message: "don't emit basic Subscriber event",
 		},
 		{
 			give:    &EventStd{Name: "My name", Age: 1, hidden: "hi hi hi"},
@@ -148,9 +148,9 @@ func TestEmittingEvent(t *testing.T) {
 			message: "does not support pointer event",
 		},
 		{
-			give:    EventNoListener{},
-			expect:  evli.ErrNoListenerFound,
-			message: "don't treat zero listener",
+			give:    EventNoSubscriber{},
+			expect:  evli.ErrNoSubscriberFound,
+			message: "don't treat zero Subscriber",
 		},
 		{
 			give:    UnknownEvent{},

@@ -1,11 +1,11 @@
 package evli
 
-// Listener listen to an event and be execute
+// Subscriber listen to an event and be execute
 // context if used to canceled event emittion process in gross case.
-type Listener func(*Source)
+type Subscriber func(*Source)
 
-// listenerDesc is the descriptor of listener
-type listenerDesc struct {
-	l    Listener
+// subscriberDesc is the descriptor of subscriber
+type subscriberDesc struct {
+	l    Subscriber
 	name string
 }
