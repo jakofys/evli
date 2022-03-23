@@ -1,6 +1,6 @@
 # evli
 
-Evli is a event listener implementation for go application.
+Evli is a event Subscriber implementation for go application.
 
 ## Usage
 
@@ -16,18 +16,18 @@ type RandomEvent struct {
 }
 ```
 
-### Listener
+### Subscriber
 
-For create a `Listener` simple implement `Listener` interface:
+For create a `Subscriber` simple implement `Subscriber` interface:
 
 ```go
-func ListenerExample(*evli.Source){}
+func SubscriberExample(*evli.Source){}
 ```
 
-Declare it using `Listen` to bind multiple `Listener` to a single `Event`:
+Declare it using `Subscribe` to bind multiple `Subscriber` to a single `Event`:
 
 ```go
-_ = evli.Listen(RandomeEvent{},ListenerExample, SeconListenerExemple)
+_ = evli.Subscribe(RandomeEvent{},SubscriberExample, SeconSubscriberExemple)
 ```
 
 ### Source
@@ -46,7 +46,7 @@ type RandomData struct {
 For retrieving data, use a pointer structure to rehydrate from the `Event` payload using the `Source` object:
 
 ```go
-func ListenerExample(s *evli.Source){
+func SubscriberExample(s *evli.Source){
     data := &RandomData{}
     _ = s.Payload(data)
 }

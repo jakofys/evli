@@ -95,7 +95,7 @@ func associate(val, target reflect.Value) {
 	}
 }
 
-// schema get schema of event source to easily associate in listener
+// schema get schema of event source to easily associate in Subscriber
 func schema(v interface{}) map[string]reflect.Value {
 	vals := make(map[string]reflect.Value)
 	vt := reflect.ValueOf(v)
